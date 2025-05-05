@@ -24,7 +24,7 @@
       document.getElementById('progress').textContent = 'Starting download...';
       document.getElementById('fileLink').innerHTML = '';
 
-      const res = await fetch('https://your-backend-url.onrender.com/download', {
+      const res = await fetch('https://torrent-backend.onrender.com/download', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ magnet })
