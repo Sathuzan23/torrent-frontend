@@ -9,7 +9,7 @@
       const result = document.getElementById("result");
       result.textContent = "Downloading...";
 
-      const res = await fetch("https://<your-backend-url>/api/download", {
+      const res = await fetch("https://torrent-backend.onrender.com/api/download", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ magnet })
@@ -17,7 +17,7 @@
 
       const data = await res.json();
       if (data.url) {
-        result.innerHTML = `<a href="https://<your-backend-url>${data.url}" download>${data.name}</a>`;
+        result.innerHTML = `<a href="https://torrent-backend.onrender.com${data.url}" download>${data.name}</a>`;
       } else {
         result.textContent = data.error || "Failed.";
       }
