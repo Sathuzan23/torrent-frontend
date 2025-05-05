@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Torrent Downloader</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+  <div class="bg-white p-6 rounded shadow w-full max-w-md">
+    <h1 class="text-2xl font-semibold mb-4 text-center">Torrent Downloader</h1>
+    <input id="magnetLink" type="text" placeholder="Paste magnet link here"
+      class="w-full px-3 py-2 border rounded mb-4" />
+    <button onclick="downloadTorrent()"
+      class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+      Download
+    </button>
+    <p id="progress" class="mt-4 text-gray-700 text-sm"></p>
+    <div id="fileLink" class="mt-2"></div>
+  </div>
+
+  <script>
+    async function downloadTorrent() {
+      const magnet = document.getElementById('magnetLink').value;
+      document.getElementById('progress').textContent = 'Starting download...';
+      document.getElementById('fileLink').innerHTML = '';
+
+      const res = await fetch('https://your-backend-url.onrender.com/download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ magnet })
+      });
+
+      const data = await res.json();
+
+      if (data.error) {
+        document.getElementById('progress').textContent = data.error;
+      } else {
+        document.getElementById('progress').textContent = 'Download completed.';
+        document.getElementById('fileLink').innerHTML = `
+          <a href="${data.file}" download class="text-blue-600 underline">
+            Click to Download
+          </a>
+        `;
+      }
+    }
+  </script>
+</body>
+</html>
