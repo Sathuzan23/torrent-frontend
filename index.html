@@ -3,62 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <title>Torrent Downloader</title>
-  <script src="https://cdn.jsdelivr.net/npm/webtorrent/webtorrent.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
-  <div class="bg-white p-6 rounded shadow w-full max-w-md">
-    <h1 class="text-2xl font-semibold mb-4 text-center">Torrent Downloader</h1>
-    <input id="magnetLink" type="text" placeholder="Paste magnet link here"
-           class="w-full px-3 py-2 border rounded mb-4" />
-    <button onclick="downloadTorrent()"
-            class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
-      Download
-    </button>
-    <p id="progress" class="mt-4 text-gray-700 text-sm"></p>
-  </div>
-
   <script>
-    const client = new WebTorrent();
+    async function downloadTorrent() {
+      const magnet = document.getElementById("magnet").value;
+      const result = document.getElementById("result");
+      result.textContent = "Downloading...";
 
-    function downloadTorrent() {
-      const magnet = document.getElementById('magnetLink').value.trim();
-      const progressText = document.getElementById('progress');
-      progressText.textContent = 'Connecting to peers...';
-
-      if (!magnet) {
-        progressText.textContent = 'Please paste a magnet link.';
-        return;
-      }
-
-      client.add(magnet, torrent => {
-        progressText.textContent = `Downloading: ${torrent.name}`;
-
-        torrent.on('download', () => {
-          const pct = (torrent.downloaded / torrent.length * 100).toFixed(1);
-          progressText.textContent = `Downloading: ${torrent.name} (${pct}%)`;
-        });
-
-        torrent.on('done', () => {
-          const file = torrent.files[0];
-
-          file.getBlob((err, blob) => {
-            if (err) {
-              progressText.textContent = 'Error downloading file.';
-              return;
-            }
-
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = file.name;
-            a.click();
-
-            progressText.textContent = 'Download complete.';
-          });
-        });
+      const res = await fetch("https://<your-backend-url>/api/download", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ magnet })
       });
+
+      const data = await res.json();
+      if (data.url) {
+        result.innerHTML = `<a href="https://<your-backend-url>${data.url}" download>${data.name}</a>`;
+      } else {
+        result.textContent = data.error || "Failed.";
+      }
     }
   </script>
+</head>
+<body style="font-family: sans-serif; padding: 2rem">
+  <h1>Simple Torrent Downloader</h1>
+  <input type="text" id="magnet" style="width: 100%" placeholder="Paste magnet link..." />
+  <button onclick="downloadTorrent()">Download</button>
+  <p id="result"></p>
 </body>
 </html>
